@@ -74,12 +74,17 @@ export function useAdminDashboard() {
       .filter((o) => o.status === "completed")
       .reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
 
+    // "Pending" = COD orders recorded but not yet paid/delivered
     const pendingOrders = orders.filter((o) => o.status === "pending").length;
+
+    // "Processing" = payment confirmed (card) or order being fulfilled (COD after admin update)
+    const processingOrders = orders.filter((o) => o.status === "processing").length;
 
     return {
       revenue: totalRevenue,
       totalOrders: orders.length,
       pendingOrders,
+      processingOrders,
       totalPhones: phones.length,
       totalUsers: users.length,
     };

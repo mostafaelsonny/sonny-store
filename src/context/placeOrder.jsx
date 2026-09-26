@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabaseClient";
 
-export const placeOrder = async ({ shippingData, cartItems, totalAmount, userId, clearCart }) => {
+export const placeOrder = async ({ shippingData, cartItems, totalAmount, userId, clearCart, initialStatus = "pending" }) => {
   try {
     // أ) إنشاء السجل في جدول orders
     const { data: order, error: orderError } = await supabase
@@ -13,8 +13,9 @@ export const placeOrder = async ({ shippingData, cartItems, totalAmount, userId,
           address: shippingData.address,
           city: shippingData.city,
           total_amount: totalAmount,
-          shipping_cost: Math.random(), // أو القيمة الديناميكية حسب منطقتك
-          status: "pending",
+          shipping_cost: Math.random(),
+          payment_method: shippingData.paymentMethod,
+          status: initialStatus, // "pending" for COD, "processing" for Card
         },
       ])
       .select()

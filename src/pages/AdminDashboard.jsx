@@ -94,7 +94,11 @@ export default function AdminDashboard() {
                           <BiShoppingBag className="text-[2.2rem] text-[#0088ff] shrink-0" />
                           <div>
                             <span className="text-[0.8rem] text-[#64748b] font-semibold block">Total Orders</span>
-                            <h3 className="text-[1.25rem] font-extrabold text-[#1e293b]">{kpis.totalOrders} <small className="text-sm font-semibold text-[#64748b]">({kpis.pendingOrders} Pending)</small></h3>
+                            <h3 className="text-[1.25rem] font-extrabold text-[#1e293b]">{kpis.totalOrders}</h3>
+                            <div className="flex gap-2 mt-1 flex-wrap">
+                              <span className="text-[0.72rem] font-bold bg-[#fef3c7] text-[#d97706] px-2 py-0.5 rounded-full">🟡 {kpis.pendingOrders} Pending</span>
+                              <span className="text-[0.72rem] font-bold bg-[#e0f2fe] text-[#0369a1] px-2 py-0.5 rounded-full">🔵 {kpis.processingOrders} Processing</span>
+                            </div>
                           </div>
                         </div>
 
@@ -197,27 +201,25 @@ export default function AdminDashboard() {
                                 <td className="py-[14px] px-4 border-b border-[#e2e8f0] whitespace-nowrap">{o.city}</td>
                                 <td className="py-[14px] px-4 border-b border-[#e2e8f0] whitespace-nowrap"><strong>EGP {Number(o.total_amount).toLocaleString()}</strong></td>
                                 <td className="py-[14px] px-4 border-b border-[#e2e8f0] whitespace-nowrap">
-                                  <select 
-                                    className={`px-3 py-1.5 rounded-full border border-[#e2e8f0] font-semibold text-[0.8rem] cursor-pointer outline-none ${
+                                  <select
+                                    className={`px-3 py-1.5 rounded-full border font-semibold text-[0.8rem] cursor-pointer outline-none transition-colors ${
                                       o.status === "pending"
-                                        ? "bg-[#fef3c7] text-[#d97706]"
+                                        ? "bg-[#fef3c7] text-[#d97706] border-[#fcd34d]"
                                         : o.status === "processing"
-                                        ? "bg-[#e0f2fe] text-[#0369a1]"
-                                        : o.status === "shipped"
-                                        ? "bg-[#f3e8ff] text-[#6b21a8]"
-                                        : (o.status === "delivered" || o.status === "completed")
-                                        ? "bg-[#dcfce7] text-[#15803d]"
+                                        ? "bg-[#e0f2fe] text-[#0369a1] border-[#7dd3fc]"
+                                        : o.status === "completed"
+                                        ? "bg-[#dcfce7] text-[#15803d] border-[#86efac]"
                                         : o.status === "cancelled"
-                                        ? "bg-[#fee2e2] text-[#b91c1c]"
-                                        : "bg-[#fef3c7] text-[#d97706]"
+                                        ? "bg-[#fee2e2] text-[#b91c1c] border-[#fca5a5]"
+                                        : "bg-[#fef3c7] text-[#d97706] border-[#fcd34d]"
                                     }`}
                                     value={o.status || "pending"}
                                     onChange={(e) => handleOrderStatusChange(o.id, e.target.value)}
                                   >
-                                    <option value="pending">pending</option>
-                                    <option value="processing">processing</option>
-                                    <option value="completed">completed</option>
-                                    <option value="cancelled">cancelled</option>
+                                    <option value="pending">🟡 Pending</option>
+                                    <option value="processing">🔵 Processing</option>
+                                    <option value="completed">🟢 Completed</option>
+                                    <option value="cancelled">🔴 Cancelled</option>
                                   </select>
                                 </td>
                                 <td className="py-[14px] px-4 border-b border-[#e2e8f0] whitespace-nowrap">

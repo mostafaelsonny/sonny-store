@@ -35,14 +35,14 @@ export default function OrderSuccessPage() {
 
       const { shippingData, cartItems, totalAmount, userId } = JSON.parse(raw);
 
-      // ✅ This is the ONLY place we write a Stripe order to the database —
-      // after Stripe has already confirmed payment by sending the user here.
+      // ✅ Payment already confirmed by Stripe — order starts as "processing"
       const result = await placeOrder({
         shippingData,
         cartItems,
         totalAmount,
         userId,
         clearCart,
+        initialStatus: "processing",
       });
 
       // Always clean up sessionStorage regardless of DB result.
