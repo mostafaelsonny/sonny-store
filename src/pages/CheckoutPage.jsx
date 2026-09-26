@@ -51,7 +51,8 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // 1️⃣ لو الاختيار Cash on Delivery -> تنفيذه بنفس الدالة القديمة بالضبط 100%
+      // ─── FLOW 1: Cash on Delivery ────────────────────────────────────────────
+      // Safe to write to DB immediately since no external redirect can be abandoned.
       if (data.paymentMethod === "cod") {
         const result = await placeOrder({
           shippingData: data,
@@ -64,31 +65,30 @@ export default function CheckoutPage() {
         if (result.success) {
           navigate("/order-success", { state: { orderId: result.orderId } });
         } else {
-          alert("فشل في تسجيل الطلب: " + result.error);
+          alert("Failed to place order: " + result.error);
         }
         return;
       }
 
-      // 2️⃣ لو الاختيار Pay with Card (Stripe)
-      // أ) حفظ الطلب أولاً في الداتابيز بنفس الدالة وبحالة pending
-      const result = await placeOrder({
+      // ─── FLOW 2: Stripe Online Payment ───────────────────────────────────────
+      // ✅ FIX: We do NOT write to the database here.
+      // The order is only saved AFTER Stripe confirms payment on the success page.
+      // If the user cancels, they return to /checkout and nothing is in the DB.
+
+      // Step 1 — Persist order intent in sessionStorage so the success page can save it.
+      const pendingOrderPayload = {
         shippingData: data,
         cartItems: cartItems,
         totalAmount: totalPrice,
         userId: user?.id,
-        clearCart: () => {}, // لا نمسح السلة الآن، سيتم مسحها فقط بعد نجاح الدفع عبر Webhook أو صفحة النجاح
-      });
+      };
+      sessionStorage.setItem("pending_stripe_order", JSON.stringify(pendingOrderPayload));
 
-      if (!result.success) {
-        throw new Error(result.error);
-      }
-
-      // ب) استدعاء Supabase Edge Function أو سيرفر Stripe للحصول على رابط Checkout Session
+      // Step 2 — Create the Stripe Checkout Session via Edge Function (NO orderId needed).
       const { data: sessionData, error: sessionErr } = await supabase.functions.invoke(
         "create-stripe-session",
         {
           body: {
-            orderId: result.orderId,
             items: cartItems,
             shippingFee: shippingFee,
             customerEmail: user?.email,
@@ -97,15 +97,20 @@ export default function CheckoutPage() {
       );
 
       if (sessionErr || !sessionData?.url) {
+        // If the Edge Function itself fails, clean up and show error.
+        sessionStorage.removeItem("pending_stripe_order");
         throw new Error(sessionErr?.message || "Failed to initialize Stripe payment.");
       }
 
-      // ج) التحويل إلى رابط صفحة دفع Stripe الآمنة
+      // Step 3 — Redirect to Stripe. Cart is NOT cleared yet.
+      // success_url → /order-success?payment=stripe  (handled by Edge Function)
+      // cancel_url  → /checkout                      (handled by Edge Function)
       window.location.href = sessionData.url;
 
     } catch (error) {
       console.error("Checkout Error:", error);
-      alert("حدث خطأ أثناء معالجة الدفع: " + (error.message || "برجاء المحاولة لاحقاً"));
+      // Route user to a dedicated error page with the cause of failure.
+      navigate("/checkout-error", { state: { reason: error.message || "An unexpected error occurred. Please try again." } });
     } finally {
       setIsSubmitting(false);
     }

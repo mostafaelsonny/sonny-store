@@ -14,6 +14,7 @@ import PhoneDetailPage from "./pages/PhoneDetailPage";
 import ShopPage from "./pages/ShopPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SearchResultsPage from "./pages/SearchResultsPage";
+import CheckoutErrorPage from "./pages/CheckoutErrorPage";
 
 //import components //
 import Spinner from "./components/ui/Spinner";
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/my-orders" element={<MyOrdersPage />} />
         <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/checkout-error" element={<CheckoutErrorPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/:phoneId" element={<PhoneDetailPage />} />

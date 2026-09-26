@@ -83,8 +83,7 @@ export default function CartProvider({ children }) {
   const addToCart = async (product) => {
     console.log(product);
     const productId = product.id;
-    const productName = product.name
-    // استخراج القيمة الرقمية أو نص السعر فقط
+    const productName = product.name;
     const priceValue = typeof product.price === 'object' ? product.price.amount : product.price;
     const img = Array.isArray(product.images) ? product.images[0] : product.image;
 
@@ -100,8 +99,7 @@ export default function CartProvider({ children }) {
             item.id === productId ? { ...item, quantity: newQty } : item
           );
         }
-        // 👇 هنا التعديل: تخزين الأبعاد المبسطة فقط (بدون إدخال price الأوبجكت)
-        return [...prev, { id: productId, quantity: 1, price: priceValue, image: img  , name : productName}];
+        return [...prev, { id: productId, quantity: 1, price: priceValue, image: img, name: productName }];
       });
 
       await supabase.from("cart_items").upsert(
@@ -110,8 +108,8 @@ export default function CartProvider({ children }) {
           product_id: productId,
           quantity: newQty,
           price: priceValue,
-          image: img ,
-          name : productName 
+          image: img,
+          name: productName,
         },
         { onConflict: "user_id,product_id" }
       );
@@ -120,14 +118,13 @@ export default function CartProvider({ children }) {
         let updated;
         const found = prev.find((item) => item.id === productId);
         if (found) {
-          updated = prev.map((item  ) =>
+          updated = prev.map((item) =>
             item.id === productId
               ? { ...item, quantity: item.quantity + 1 }
               : item
           );
         } else {
-          // 👇 التعديل هنا أيضاً للزائر
-          updated = [...prev, { id: productId, quantity: 1, price: priceValue, image: img , name : productName }];
+          updated = [...prev, { id: productId, quantity: 1, price: priceValue, image: img, name: productName }];
         }
         localStorage.setItem("guest_cart", JSON.stringify(updated));
         return updated;

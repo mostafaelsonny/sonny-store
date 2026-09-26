@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoListSharp } from "react-icons/io5";
-import { FaCaretDown, FaUserCircle } from "react-icons/fa"; // إضافة أيقونة البروفايل
+import { FaUserCircle } from "react-icons/fa"; // إضافة أيقونة البروفايل
 import { CiLogin } from "react-icons/ci";
 import { TiUserAdd } from "react-icons/ti";
 import { FiLogOut } from "react-icons/fi"; // أيقونة الخروج
@@ -25,9 +25,9 @@ export default function BotHeader() {
         <ul className="hidden md:flex list-none m-0 p-0 gap-1">
           <Link to='/' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">Home</li></Link>
           <Link to='/about' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">About</li></Link>
+          <Link to='/shop' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">Shop</li></Link>
           <Link to='/blog' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">Blog</li></Link>
           <Link to='/contact' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">Contact</li></Link>
-          <Link to='/shop' style={{textDecoration:"none",color:"white"}}><li className="text-base p-4 hover:bg-[#0052cc] transition-colors">Shop</li></Link>
         </ul>
 
         {/* Hamburger (mobile only) */}
