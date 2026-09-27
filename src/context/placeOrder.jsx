@@ -14,7 +14,6 @@ export const placeOrder = async ({ shippingData, cartItems, totalAmount, userId,
           city: shippingData.city,
           total_amount: totalAmount,
           shipping_cost: Math.random(),
-          payment_method: shippingData.paymentMethod,
           status: initialStatus, // "pending" for COD, "processing" for Card
         },
       ])
