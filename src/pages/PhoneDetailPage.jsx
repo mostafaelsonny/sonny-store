@@ -15,8 +15,10 @@ import {
   BiTrendingUp
 } from "react-icons/bi";
 import { FaCartPlus } from "react-icons/fa";
+import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import { supabase } from "../lib/supabaseClient";
 import { useCart } from "../context/CartProvider";
+import { useFav } from "../context/FavProvider";
 import BotHeader from "../components/layout/BotHeader";
 import Footer from "../components/layout/Footer";
 import Spinner from "../components/ui/Spinner";
@@ -26,6 +28,7 @@ export default function PhoneDetailPage() {
   const { phoneId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { favPhones, handleFavPhones } = useFav();
 
   const [phone, setPhone] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -79,6 +82,8 @@ export default function PhoneDetailPage() {
   const basePrice = phone.price?.amount || phone.price || 0;
   const currency = phone.price?.currency || "EGP";
 
+  const isFav = favPhones?.some((item) => (item.product_id || item.id) === (phone.product_id || phone.id));
+
   const handleAddToCart = async () => {
     setAdding(true);
     // تجهيز كائن المنتج ليمر بأمان للـ CartProvider
@@ -114,6 +119,16 @@ export default function PhoneDetailPage() {
             >
               <div className="bg-white rounded-[20px] p-10 flex items-center justify-center relative border border-[#e2e8f0] shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                 <span className="absolute top-5 left-5 bg-[#0f172a] text-white text-xs font-extrabold py-1 px-3 rounded-[20px]">{phone.brand?.toUpperCase()}</span>
+                
+                {/* Wishlist Button */}
+                <button 
+                  className={`absolute top-5 right-5 w-[42px] h-[42px] rounded-full flex items-center justify-center cursor-pointer text-[1.4rem] transition-all duration-300 ease border ${isFav ? 'bg-[#ef4444] text-white border-[#ef4444]' : 'bg-white text-[#64748b] border-[#e2e8f0] hover:text-[#ef4444] hover:border-[#ef4444]'}`}
+                  onClick={() => handleFavPhones(phone)}
+                  title={isFav ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  {isFav ? <MdFavorite /> : <MdFavoriteBorder />}
+                </button>
+
                 <img src={phone.images?.[0]} alt={phone.name} className="max-w-full max-h-[380px] object-contain" />
               </div>
             </motion.div>

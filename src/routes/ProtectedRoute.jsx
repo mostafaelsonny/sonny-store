@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Spinner from "../components/ui/Spinner";
 
@@ -8,10 +8,11 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) return <Spinner message="Loading..." fullScreen={true} />;
 
-  // لو مفيش مستخدم، بنحوله لـ /login وبنبعت معاه المكان اللي كان رايحه
+  // Redirect to login if unauthenticated, preserving the intended destination
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return children;
+  // Support both nested route <Outlet /> and standard {children} wrapper
+  return children ? children : <Outlet />;
 }
